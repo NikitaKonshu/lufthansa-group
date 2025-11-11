@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lufthansa Group Virtual — Генератор рейсов</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">LH</div>
+        <div class="brand-text">
+          <div class="big">Lufthansa Group Virtual</div>
+          <div class="muted">Генератор рейсов — компактный и аккуратный</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn ghost" id="openDemo">Открыть демо</button>
+        <button class="btn ghost" id="openAbout">О проекте</button>
+        <button class="btn primary" id="openLogin">Войти</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="panel left">
+        <div class="panel-header">
+          <h2>Генерация рейса</h2>
+          <div class="hint">Группы хабов свернуты по умолчанию; выбери хаб и длительность</div>
+        </div>
+
+        <div class="card selection">
+          <div class="subheading">Хабы</div>
+          <div id="hubs" class="hubs"></div>
+        </div>
+
+        <div class="card selection">
+          <div class="subheading">Длительность</div>
+          <div id="durations" class="durations"></div>
+        </div>
+
+        <div class="card actions">
+          <div class="controls">
+            <button id="genBtn" class="btn primary large">Сгенерировать</button>
+            <button id="demoBtn" class="btn ghost">Демо</button>
+            <button id="resetBtn" class="btn ghost">Сброс</button>
+          </div>
+          <div class="status-row">
+            <div class="muted">Выбрано: <span id="summary">—</span></div>
+            <div class="muted">Вошёл: <strong id="signedUser">—</strong></div>
+          </div>
+        </div>
+
+        <div id="resultArea" class="card result" hidden></div>
+      </section>
+
+      <aside class="panel right">
+        <div class="panel-header">
+          <h3>Флот</h3>
+          <div class="muted small">Город (ICAO) · дальность · места · статус</div>
+        </div>
+
+        <div class="card fleet-card">
+          <div id="fleetList" class="fleet-list"></div>
+          <div class="fleet-controls">
+            <button id="refreshFleet" class="btn ghost">Обновить</button>
+            <button id="showLog" class="btn ghost">Показать лог</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer muted">Демо-данные · Сделано для внутреннего использования</footer>
+  </div>
+
+  <!-- Login modal (rendered by JS) -->
+  <script src="ui.js"></script>
+</body>
+</html>
