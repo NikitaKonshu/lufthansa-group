@@ -7,74 +7,82 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="page">
+  <div class="app">
     <header class="topbar">
       <div class="brand">
         <div class="logo">LH</div>
         <div class="brand-text">
-          <div class="big">Lufthansa Group Virtual</div>
-          <div class="muted">Генератор рейсов — компактный и аккуратный</div>
+          <div class="title">Lufthansa Group Virtual</div>
+          <div class="subtitle">Генератор рейсов — компактный и аккуратный</div>
         </div>
       </div>
-      <div class="top-actions">
-        <button class="btn ghost" id="openDemo">Открыть демо</button>
+      <div class="actions">
         <button class="btn ghost" id="openAbout">О проекте</button>
+        <button class="btn ghost" id="openDemo">Открыть демо</button>
         <button class="btn primary" id="openLogin">Войти</button>
       </div>
     </header>
 
-    <main class="container">
-      <section class="panel left">
-        <div class="panel-header">
-          <h2>Генерация рейса</h2>
-          <div class="hint">Группы хабов свернуты по умолчанию; выбери хаб и длительность</div>
-        </div>
-
-        <div class="card selection">
-          <div class="subheading">Хабы</div>
-          <div id="hubs" class="hubs"></div>
-        </div>
-
-        <div class="card selection">
-          <div class="subheading">Длительность</div>
-          <div id="durations" class="durations"></div>
-        </div>
-
-        <div class="card actions">
-          <div class="controls">
-            <button id="genBtn" class="btn primary large">Сгенерировать</button>
-            <button id="demoBtn" class="btn ghost">Демо</button>
-            <button id="resetBtn" class="btn ghost">Сброс</button>
+    <main class="layout">
+      <section class="left-col">
+        <div class="panel">
+          <div class="panel-head">
+            <h1>Генерация рейса</h1>
+            <p class="hint">Выбери один или несколько хабов и длительность. Нажми «Сгенерировать».</p>
           </div>
-          <div class="status-row">
-            <div class="muted">Выбрано: <span id="summary">—</span></div>
-            <div class="muted">Вошёл: <strong id="signedUser">—</strong></div>
-          </div>
-        </div>
 
-        <div id="resultArea" class="card result" hidden></div>
+          <div class="row">
+            <div class="card glass">
+              <div class="card-head">Хабы</div>
+              <div id="hubs" class="list hubs"></div>
+            </div>
+
+            <div class="card glass">
+              <div class="card-head">Длительность</div>
+              <div id="durations" class="list durations"></div>
+            </div>
+          </div>
+
+          <div class="card controls">
+            <div class="controls-row">
+              <button id="genBtn" class="btn primary big">Сгенерировать</button>
+              <button id="demoBtn" class="btn ghost">Демо</button>
+              <button id="resetBtn" class="btn ghost">Сброс</button>
+              <div class="spacer"></div>
+              <div class="muted">Вошёл: <strong id="signedUser">—</strong></div>
+            </div>
+            <div id="summary" class="selection-summary muted">Выбрано: —</div>
+          </div>
+
+          <div id="resultArea" class="card result-card" hidden></div>
+        </div>
       </section>
 
-      <aside class="panel right">
-        <div class="panel-header">
-          <h3>Флот</h3>
-          <div class="muted small">Город (ICAO) · дальность · места · статус</div>
+      <aside class="right-col">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Флот</h3>
+            <div class="muted small">Город (ICAO) · дальность · места · статус</div>
+          </div>
+
+          <div class="card fleet glass">
+            <div id="fleetList" class="fleet-list"></div>
+            <div class="fleet-actions">
+              <button id="refreshFleet" class="btn ghost">Обновить</button>
+              <button id="showLog" class="btn ghost">Показать лог</button>
+            </div>
+          </div>
         </div>
 
-        <div class="card fleet-card">
-          <div id="fleetList" class="fleet-list"></div>
-          <div class="fleet-controls">
-            <button id="refreshFleet" class="btn ghost">Обновить</button>
-            <button id="showLog" class="btn ghost">Показать лог</button>
-          </div>
+        <div class="panel logs">
+          <div class="card glass small muted" id="logArea">Журнал пуст. Действия будут показаны здесь.</div>
         </div>
       </aside>
     </main>
 
-    <footer class="footer muted">Демо-данные · Сделано для внутреннего использования</footer>
+    <footer class="footer muted">Демо · Сделано для внутреннего использования</footer>
   </div>
 
-  <!-- Login modal (rendered by JS) -->
   <script src="ui.js"></script>
 </body>
 </html>
