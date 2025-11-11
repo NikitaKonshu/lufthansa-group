@@ -1,17 +1,17 @@
 :root{
   --bg-1:#07121a; --bg-2:#042733; --accent:#ffd24d;
   --muted:#9fb6d6; --text:#eaf4ff; --glass:rgba(255,255,255,0.04);
-  --glass-2:rgba(255,255,255,0.025); --radius:14px; --shadow:0 12px 30px rgba(2,8,20,0.6);
-  --ok:#bff2be; --danger:#ff7a59;
-  --glass-border:rgba(255,255,255,0.06);
+  --radius:14px; --shadow:0 12px 30px rgba(2,8,20,0.6);
+  --ok:#bff2be;
+  --anim-fast:160ms; --anim-medium:320ms; --anim-spring:cubic-bezier(.2,.9,.25,1);
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;background:radial-gradient(1200px 500px at 10% 10%, rgba(255,210,77,0.06), transparent), linear-gradient(180deg,var(--bg-1),var(--bg-2));color:var(--text);-webkit-font-smoothing:antialiased;}
-.app{max-width:1200px;margin:26px auto;padding:18px}
+#mainUI{max-width:1200px;margin:26px auto;padding:18px;}
 
 /* topbar */
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:18px;background:linear-gradient(90deg,#042a35,#073a55);box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.02)}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:18px;background:linear-gradient(90deg,#042a35,#073a55);box-shadow:var(--shadow)}
 .brand{display:flex;align-items:center;gap:12px}
 .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(180deg,#083b3e,#042a2f);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--accent);font-size:22px;box-shadow:0 6px 18px rgba(0,0,0,0.5)}
 .title{font-weight:800;font-size:18px}
@@ -24,22 +24,17 @@ html,body{height:100%;margin:0;background:radial-gradient(1200px 500px at 10% 10
 
 /* panels & cards */
 .panel{display:flex;flex-direction:column;gap:12px}
-.card{padding:14px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid var(--glass-border);box-shadow:var(--shadow)}
-.glass{backdrop-filter: blur(6px); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));}
-.panel-head h1{margin:0;font-size:20px}
-.hint{color:var(--muted);margin:6px 0 0;font-size:13px}
+.card{padding:14px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.02);box-shadow:var(--shadow)}
+.glass{backdrop-filter: blur(6px);}
 
-/* rows */
-.row{display:flex;gap:12px}
+/* lists */
 .list{display:flex;flex-direction:column;gap:10px;max-height:360px;overflow:auto;padding-right:6px}
-.hub, .duration{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:12px;cursor:pointer;transition:transform .12s ease, box-shadow .12s ease, background .12s ease;border:1px solid rgba(255,255,255,0.02)}
-.hub:hover, .duration:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,0.45)}
+.hub, .duration{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:12px;cursor:pointer;transition:transform var(--anim-medium) var(--anim-spring), box-shadow var(--anim-medium) var(--anim-spring), opacity var(--anim-medium)}
+.hub:hover, .duration:hover{transform:translateY(-6px)}
 .hub .left{display:flex;gap:12px;align-items:center}
 .hub .code{font-weight:900;background:rgba(0,0,0,0.18);padding:8px 10px;border-radius:10px}
 .hub .meta{color:var(--muted);font-size:13px}
 .hub .count{background:linear-gradient(180deg,#ffd24d,#ffc600);color:#082a20;padding:6px 10px;border-radius:999px;font-weight:800}
-
-.duration{justify-content:flex-start;gap:12px}
 .duration.selected{background:linear-gradient(90deg, rgba(255,210,77,0.14), rgba(255,210,77,0.06));border:1px solid rgba(255,210,77,0.18);font-weight:800;transform:translateY(-8px)}
 
 /* controls */
@@ -53,21 +48,26 @@ html,body{height:100%;margin:0;background:radial-gradient(1200px 500px at 10% 10
 /* fleet */
 .fleet-list{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto}
 .fleet-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.012), transparent);border:1px solid rgba(255,255,255,0.02)}
-.fleet-left{display:flex;gap:12px;align-items:center}
 .aircraft{width:64px;height:44px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.16));display:flex;align-items:center;justify-content:center;font-weight:900}
 .fleet-meta{font-size:13px;color:var(--muted)}
 .status{padding:6px 10px;border-radius:10px;font-weight:800}
 .status.inflight{background:linear-gradient(90deg,#3b6eff,#2b4cff);color:white}
 .status.idle{background:linear-gradient(90deg,#083b22,#155a3a);color:var(--ok)}
-.status.out{background:#3f3f46;color:white}
 
-/* result card */
+/* result */
 .result-card{margin-top:12px;padding:14px;border-radius:12px;background:linear-gradient(180deg,#052b2f,#04262a);border:1px solid rgba(255,255,255,0.03)}
-.result-card .ok{color:var(--ok);font-weight:800}
+.card-inner{opacity:1;transform:scale(1);transition:transform var(--anim-medium) var(--anim-spring),opacity var(--anim-medium) linear}
 
-/* footer */
-.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+/* animations / ready */
+.card, .hub, .fleet-item, .duration{transform:translateY(6px);opacity:0;transition:transform var(--anim-medium) var(--anim-spring),opacity var(--anim-medium)}
+.main-ready .card, .main-ready .hub, .main-ready .fleet-item, .main-ready .duration{transform:none;opacity:1}
 
-/* micro interactions */
-.hub.selected, .hub.selected .code{box-shadow:0 16px 36px rgba(1,6,12,0.6);transform:translateY(-8px)}
-.duration {user-select:none}
+/* hub-airlines */
+.hub-airlines{opacity:0;transform:translateY(-6px);transition:opacity var(--anim-fast),transform var(--anim-fast)}
+.hub .hub-airlines{opacity:1;transform:none}
+
+/* gate hiding */
+#mainUI[aria-hidden="true"]{pointer-events:none;user-select:none;filter:blur(0.6px) saturate(.9)}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
