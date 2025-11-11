@@ -1,5 +1,5 @@
-// ui.js — рендеринг интерфейса, вход (простая модаль), выбор хабов/длительности, сниппеты для генератора.
-// Точки расширения: window.onGenerateSelected({hubs, duration}) — подключи сюда свою логику генерации.
+// ui.js — улучшённый UI + микровзаимодействия
+// Точка расширения: window.onGenerateSelected(payload) — интегрируй сюда генератор рейсов.
 
 const HUBS = [
   { code: 'EDDF', label: 'Frankfurt', count: 9 },
@@ -34,12 +34,10 @@ const FLEET = [
   { type:'A350', id:'LH-A350-01', base:'EDDM', dist:'15000 km', seats:300, status:'idle' }
 ];
 
-/* state */
 let selectedHubs = new Set();
 let selectedDuration = null;
-let currentUser = null; // simple demo: set after login
+let currentUser = null;
 
-/* elements */
 const hubsEl = document.getElementById('hubs');
 const durationsEl = document.getElementById('durations');
 const fleetListEl = document.getElementById('fleetList');
@@ -49,6 +47,7 @@ const resetBtn = document.getElementById('resetBtn');
 const summaryEl = document.getElementById('summary');
 const resultArea = document.getElementById('resultArea');
 const signedUserEl = document.getElementById('signedUser');
+const logArea = document.getElementById('logArea');
 
 function renderHubs(){
   hubsEl.innerHTML = HUBS.map(h => `
@@ -60,16 +59,14 @@ function renderHubs(){
           <div class="meta">${h.code} · ${h.count} авиакомпаний</div>
         </div>
       </div>
-      <div class="right">
-        <div class="count">${h.count}</div>
-      </div>
+      <div class="count">${h.count}</div>
     </div>
   `).join('');
   hubsEl.querySelectorAll('.hub').forEach(el=>{
     el.addEventListener('click', ()=> {
       const code = el.dataset.code;
-      if (selectedHubs.has(code)) selectedHubs.delete(code); else selectedHubs.add(code);
-      el.classList.toggle('selected');
+      if (selectedHubs.has(code)) { selectedHubs.delete(code); el.classList.remove('selected'); }
+      else { selectedHubs.add(code); el.classList.add('selected'); }
       updateSummary();
     });
   });
@@ -98,41 +95,30 @@ function renderFleet(){
           <div class="fleet-meta">${f.base} · ${f.dist} · ${f.seats} seats</div>
         </div>
       </div>
-      <div>
-        <div class="status ${st}">${f.status}</div>
-      </div>
+      <div><div class="status ${st}">${f.status}</div></div>
     </div>`;
   }).join('');
 }
 
-/* interactions */
 function updateSummary(){
-  summaryEl.textContent = `${Array.from(selectedHubs).join(', ') || '—'} ${selectedDuration ? '· ' + selectedDuration + 'ч' : ''}`;
+  const hubs = Array.from(selectedHubs).join(', ') || '—';
+  summaryEl.textContent = `Выбрано: ${hubs}${selectedDuration ? ' · ' + selectedDuration + 'ч' : ''}`;
 }
 
 genBtn.addEventListener('click', ()=> {
-  if (!currentUser) {
-    openLoginModal();
-    return;
-  }
-  if (!selectedHubs.size || !selectedDuration) {
-    alert('Выберите как минимум один хаб и длительность');
-    return;
-  }
-  // titik расширения: вызови собственную генерацию, если она определена
+  if (!currentUser) { openLoginModal(); return; }
+  if (!selectedHubs.size || !selectedDuration) { alert('Выберите хаб и длительность'); return; }
   const payload = { hubs: Array.from(selectedHubs), duration: selectedDuration, user: currentUser };
-  if (window.onGenerateSelected && typeof window.onGenerateSelected === 'function') {
-    window.onGenerateSelected(payload);
-  } else {
-    // демо: отображаем краткий результат
+  if (window.onGenerateSelected) { window.onGenerateSelected(payload); }
+  else {
     resultArea.hidden = false;
-    resultArea.innerHTML = `<div class="card-inner"><strong>Рейс сгенерирован</strong><div class="muted" style="margin-top:8px">Пилот: ${currentUser.callsign || currentUser || '—'} · Хабы: ${payload.hubs.join(', ')} · Длительность: ${payload.duration}ч</div></div>`;
+    resultArea.innerHTML = `<div class="card"><strong class="ok">Рейс сгенерирован</strong><div class="muted" style="margin-top:8px">Пилот: ${currentUser.callsign||currentUser} · Хабы: ${payload.hubs.join(', ')} · Длительность: ${payload.duration}ч</div></div>`;
+    prependLog(`Рейс: ${currentUser.callsign||currentUser} · ${payload.hubs.join(', ')} · ${payload.duration}ч`);
   }
 });
 
 demoBtn.addEventListener('click', ()=> {
-  // быстро выбрать SunExpress-like preset
-  selectedHubs.clear(); selectedHubs.add('EDDF'); selectedHubs.add('EDDM');
+  selectedHubs = new Set(['EDDF','EDDM']);
   selectedDuration = 6;
   document.querySelectorAll('.duration').forEach(x=>x.classList.toggle('selected', x.dataset.val==6));
   document.querySelectorAll('.hub').forEach(h=>h.classList.toggle('selected', selectedHubs.has(h.dataset.code)));
@@ -147,52 +133,47 @@ resetBtn.addEventListener('click', ()=> {
   updateSummary();
 });
 
-/* simple login modal (client-only demo) */
-const openLoginBtn = document.getElementById('openLogin');
-openLoginBtn.addEventListener('click', openLoginModal);
-
+/* login modal (simple demo) */
+document.getElementById('openLogin').addEventListener('click', openLoginModal);
 function openLoginModal(){
   const modal = document.createElement('div');
-  modal.className = 'login-modal';
-  modal.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);z-index:9999';
+  modal.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,10,0.6);backdrop-filter:blur(6px);z-index:9999';
   modal.innerHTML = `
-    <div style="width:100%;max-width:520px;background:linear-gradient(180deg,#062633,#03242f);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)">
+    <div style="width:100%;max-width:520px;padding:18px;border-radius:14px;background:linear-gradient(180deg,#062633,#03242f);border:1px solid rgba(255,255,255,0.03)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div style="font-weight:800;color:var(--accent)">Пилот — Вход</div>
-        <button id="closeModal" class="btn ghost">✕</button>
+        <div style="font-weight:800;color:var(--accent)">Вход пилота</div>
+        <button id="close" class="btn ghost">✕</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px">
-        <input id="loginCall" class="input" placeholder="Позывной (например LH100)" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)"/>
-        <input id="loginPass" type="password" class="input" placeholder="Пароль" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)"/>
+        <input id="loginCall" class="input" placeholder="Позывной" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)"/>
+        <input id="loginPass" type="password" class="input" placeholder="Пароль" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)"/>
         <div style="display:flex;gap:8px;align-items:center">
           <button id="loginSubmit" class="btn primary">Войти</button>
           <button id="loginDemo" class="btn ghost">Демо (TEST)</button>
-          <div style="flex:1"></div>
-          <div id="loginMsg" class="muted small"></div>
+          <div id="loginMsg" style="margin-left:auto;color:var(--muted)"></div>
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
   document.body.appendChild(modal);
-  document.getElementById('closeModal').addEventListener('click', ()=> modal.remove());
-  document.getElementById('loginDemo').addEventListener('click', ()=> {
-    performLogin({ callsign:'TEST', name:'Demo Pilot' }); modal.remove();
-  });
-  document.getElementById('loginSubmit').addEventListener('click', async ()=>{
-    const call = document.getElementById('loginCall').value.trim();
-    const pass = document.getElementById('loginPass').value;
-    // В демо мы не проверяем пароли. Для реальной проверки интегрируй auth.js.
-    if (!call) { document.getElementById('loginMsg').textContent = 'Введите позывной'; return; }
-    performLogin({ callsign: call, name: call });
-    modal.remove();
+  modal.querySelector('#close').addEventListener('click', ()=> modal.remove());
+  modal.querySelector('#loginDemo').addEventListener('click', ()=> { performLogin({ callsign:'TEST', name:'Demo Pilot' }); modal.remove(); });
+  modal.querySelector('#loginSubmit').addEventListener('click', ()=> {
+    const call = modal.querySelector('#loginCall').value.trim();
+    if (!call) { modal.querySelector('#loginMsg').textContent = 'Введите позывной'; return; }
+    performLogin({ callsign: call, name: call }); modal.remove();
   });
 }
 
 function performLogin(user){
   currentUser = user;
   signedUserEl.textContent = user.callsign || user;
-  // для долговременной сессии можно сохранять в localStorage
-  // localStorage.setItem('lh_user', JSON.stringify(user));
+  prependLog(`Login: ${user.callsign||user.name||user}`);
+}
+
+/* small log */
+function prependLog(text){
+  const el = document.createElement('div'); el.textContent = `${new Date().toLocaleString()} — ${text}`;
+  if (logArea) logArea.prepend(el);
 }
 
 /* init */
