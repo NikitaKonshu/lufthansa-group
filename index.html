@@ -1,88 +1,92 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Lufthansa Group Virtual — Генератор рейсов</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo">LH</div>
-        <div class="brand-text">
-          <div class="title">Lufthansa Group Virtual</div>
-          <div class="subtitle">Генератор рейсов — компактный и аккуратный</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn ghost" id="openAbout">О проекте</button>
-        <button class="btn ghost" id="openDemo">Открыть демо</button>
-        <button class="btn primary" id="openLogin">Войти</button>
-      </div>
-    </header>
-
-    <main class="layout">
-      <section class="left-col">
-        <div class="panel">
-          <div class="panel-head">
-            <h1>Генерация рейса</h1>
-            <p class="hint">Выбери один или несколько хабов и длительность. Нажми «Сгенерировать».</p>
-          </div>
-
-          <div class="row">
-            <div class="card glass">
-              <div class="card-head">Хабы</div>
-              <div id="hubs" class="list hubs"></div>
-            </div>
-
-            <div class="card glass">
-              <div class="card-head">Длительность</div>
-              <div id="durations" class="list durations"></div>
-            </div>
-          </div>
-
-          <div class="card controls">
-            <div class="controls-row">
-              <button id="genBtn" class="btn primary big">Сгенерировать</button>
-              <button id="demoBtn" class="btn ghost">Демо</button>
-              <button id="resetBtn" class="btn ghost">Сброс</button>
-              <div class="spacer"></div>
-              <div class="muted">Вошёл: <strong id="signedUser">—</strong></div>
-            </div>
-            <div id="summary" class="selection-summary muted">Выбрано: —</div>
-          </div>
-
-          <div id="resultArea" class="card result-card" hidden></div>
-        </div>
-      </section>
-
-      <aside class="right-col">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>Флот</h3>
-            <div class="muted small">Город (ICAO) · дальность · места · статус</div>
-          </div>
-
-          <div class="card fleet glass">
-            <div id="fleetList" class="fleet-list"></div>
-            <div class="fleet-actions">
-              <button id="refreshFleet" class="btn ghost">Обновить</button>
-              <button id="showLog" class="btn ghost">Показать лог</button>
-            </div>
+  <div id="mainUI" aria-hidden="true">
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">LH</div>
+          <div class="brand-text">
+            <div class="title">Lufthansa Group Virtual</div>
+            <div class="subtitle">Генератор рейсов — компактный и аккуратный</div>
           </div>
         </div>
-
-        <div class="panel logs">
-          <div class="card glass small muted" id="logArea">Журнал пуст. Действия будут показаны здесь.</div>
+        <div class="actions">
+          <button class="btn ghost" id="openAbout">О проекте</button>
+          <button class="btn ghost" id="openDemo">Открыть демо</button>
+          <button class="btn primary" id="openLogin">Войти</button>
         </div>
-      </aside>
-    </main>
+      </header>
 
-    <footer class="footer muted">Демо · Сделано для внутреннего использования</footer>
+      <main class="layout">
+        <section class="left-col">
+          <div class="panel">
+            <div class="panel-head">
+              <h1>Генерация рейса</h1>
+              <p class="hint">Выбери один или несколько хабов и длительность. Нажми «Сгенерировать».</p>
+            </div>
+
+            <div class="row">
+              <div class="card glass">
+                <div class="card-head">Хабы</div>
+                <div id="hubs" class="list hubs"></div>
+              </div>
+
+              <div class="card glass">
+                <div class="card-head">Длительность</div>
+                <div id="durations" class="list durations"></div>
+              </div>
+            </div>
+
+            <div class="card controls">
+              <div class="controls-row">
+                <button id="genBtn" class="btn primary big">Сгенерировать</button>
+                <button id="demoBtn" class="btn ghost">Демо</button>
+                <button id="resetBtn" class="btn ghost">Сброс</button>
+                <div class="spacer"></div>
+                <div class="muted">Вошёл: <strong id="signedUser">—</strong></div>
+              </div>
+              <div id="summary" class="selection-summary muted">Выбрано: —</div>
+            </div>
+
+            <div id="resultArea" class="card result-card" hidden></div>
+          </div>
+        </section>
+
+        <aside class="right-col">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Флот</h3>
+              <div class="muted small">Город (ICAO) · дальность · места · статус</div>
+            </div>
+
+            <div class="card fleet glass">
+              <div id="fleetList" class="fleet-list"></div>
+              <div class="fleet-actions" style="margin-top:10px">
+                <button id="refreshFleet" class="btn ghost">Обновить</button>
+                <button id="showLog" class="btn ghost">Показать лог</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel logs" style="margin-top:12px">
+            <div class="card glass small muted" id="logArea">Журнал пуст. Действия будут показаны здесь.</div>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="footer muted">Демо · Сделано для внутреннего использования</footer>
+    </div>
   </div>
 
+  <script src="users.js"></script>
+  <script src="auth.js"></script>
   <script src="ui.js"></script>
 </body>
 </html>
