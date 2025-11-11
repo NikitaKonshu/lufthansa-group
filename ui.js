@@ -1,7 +1,6 @@
-// ui.js — UI rendering, randomizer, hook window.onGenerateSelected
-// Загружается после auth.js. UI остаётся скрытым до события 'lh:auth:ready'.
+// ui.js — интерфейс: хабы, длительности, генератор, рандомайзер
+// Загружается после auth.js; рендерится после события 'lh:auth:ready'.
 
-/* --- data --- */
 const HUBS = [
   { code: 'EDDF', label: 'Frankfurt' },
   { code: 'EDDM', label: 'Munich' },
@@ -27,10 +26,7 @@ const AIRLINES = [
   { short: 'EDW',  name: 'Edelweiss Air', flag: '🇨🇭', hubs: ['LSZH'] },
   { short: 'LHC',  name: 'Lufthansa Cargo', flag: '🇩🇪', hubs: ['EDDF'] },
   { short: 'CLH',  name: 'Lufthansa CityLine', flag: '🇩🇪', hubs: ['EDDF','EDDM'] },
-  { short: 'LCA',  name: 'Lufthansa City Airlines', flag: '🇩🇪', hubs: ['EDDF'] },
-  { short: 'LHT',  name: 'Lufthansa Technik', flag: '🇩🇪', hubs: ['EDDF'] },
   { short: 'DLA',  name: 'Air Dolomiti', flag: '🇮🇹', hubs: ['EDDF','EDDM'] },
-  { short: 'LPJ',  name: 'Lufthansa Private Jet', flag: '🇩🇪', hubs: ['EDDF'] },
   { short: 'AZ',   name: 'ITA Airways', flag: '🇮🇹', hubs: ['LIRF'] },
   { short: 'WIF',  name: 'Widerøe', flag: '🇳🇴', hubs: ['ENBR','ENGM'] },
   { short: 'DY',   name: 'Norwegian Airlines', flag: '🇳🇴', hubs: ['ENGM'] },
@@ -50,13 +46,10 @@ const FLEET = [
   { type:'A350', id:'LH-A350-01', base:'EDDM', rangeKm:15000, dist:'15000 km', seats:300, status:'idle' }
 ];
 
-/* --- state --- */
 let selectedHubs = new Set();
 let selectedDuration = null;
-let availableFleet = [];
 let currentUser = null;
 
-/* elements */
 const hubsEl = document.getElementById('hubs');
 const durationsEl = document.getElementById('durations');
 const fleetListEl = document.getElementById('fleetList');
@@ -68,18 +61,10 @@ const resultArea = document.getElementById('resultArea');
 const signedUserEl = document.getElementById('signedUser');
 const logArea = document.getElementById('logArea');
 
-/* helpers */
-function airlinesForHub(code){
-  return AIRLINES.filter(a => (a.hubs||[]).includes(code));
-}
-function estimateRequiredRange(hours){
-  const speed = 820;
-  const buffer = 1.15;
-  return Math.ceil(hours * speed * buffer);
-}
+function airlinesForHub(code){ return AIRLINES.filter(a => (a.hubs||[]).includes(code)); }
+function estimateRequiredRange(hours){ const speed = 820; const buffer = 1.15; return Math.ceil(hours * speed * buffer); }
 function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
 
-/* renderers */
 function renderHubs(){
   if (!hubsEl) return;
   hubsEl.innerHTML = HUBS.map(h => {
@@ -143,7 +128,6 @@ function renderFleet(list){
   }).join('');
 }
 
-/* interactions */
 function onHubClick(hubEl){
   const code = hubEl.dataset.code;
   if (selectedHubs.has(code)){ selectedHubs.delete(code); hubEl.classList.remove('selected'); }
@@ -177,7 +161,8 @@ function updateSummary(){
   summaryEl.textContent = `Выбрано: ${hubs}${selectedDuration ? ' · ' + selectedDuration + 'ч' : ''}`;
 }
 
-/* randomizer */
+function estimateRequiredRange(hours){ const speed = 820; const buffer = 1.15; return Math.ceil(hours * speed * buffer); }
+
 function randomizeAircraft({ hubs=[], duration }){
   const requiredKm = estimateRequiredRange(duration);
   let candidates = FLEET.filter(f => f.rangeKm >= requiredKm && f.status === 'idle');
@@ -193,7 +178,6 @@ function randomizeAircraft({ hubs=[], duration }){
   return [chosen];
 }
 
-/* generate handler */
 genBtn?.addEventListener('click', async ()=>{
   currentUser = window.CURRENT_USER || null;
   if (!currentUser){ document.dispatchEvent(new CustomEvent('request:auth')); return; }
@@ -229,7 +213,6 @@ genBtn?.addEventListener('click', async ()=>{
   prependLog(`Генерация: ${currentUser?.callsign||'—'} → ${s}`);
 });
 
-/* demo/reset */
 demoBtn?.addEventListener('click', ()=> {
   selectedHubs = new Set(['EDDF','EDDM']);
   selectedDuration = 6;
@@ -252,7 +235,6 @@ function prependLog(text){
   if (logArea) logArea.prepend(el);
 }
 
-/* init on auth ready */
 document.addEventListener('lh:auth:ready', ()=> {
   currentUser = window.CURRENT_USER || null;
   renderHubs();
@@ -260,6 +242,3 @@ document.addEventListener('lh:auth:ready', ()=> {
   renderFleet([]);
   updateSummary();
 });
-
-/* expose helper */
-window.onGenerateSelected = window.onGenerateSelected || null;
